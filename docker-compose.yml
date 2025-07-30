@@ -1,0 +1,62 @@
+services:
+  redis:
+    container_name: bf-redis
+    image: redis/redis-stack
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    environment:
+      - REDIS_ARGS="--requirepass password" # also update in .env
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+    volumes:
+      - ./volumes/redis:/data
+
+  postgres:
+    container_name: bf-postgres
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.example
+    volumes:
+      - ./volumes/pg:/var/lib/postgresql/data
+
+  api:
+    container_name: bf-api
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    image: bf-api
+    env_file:
+      - .env.example
+    volumes:
+      - ./api/src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000" # change accroding to env
+    depends_on:
+      - postgres
+      - redis
+
+  client:
+    container_name: bf-client
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    image: bf-client
+    env_file:
+      - .env.example
+    volumes:
+      - ./client/src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - postgres
+      - redis
+      - api
