@@ -10,7 +10,7 @@
 
 1. Create database named "bloom_filters"
 2. Create table named "passwords"
-3. Import csv in /api/data folder
+3. Import csv present inside /api/data directory
 
 ### Setup Redis Bloom Filters
 
@@ -45,3 +45,8 @@ docker compose up
 1. Volumes are setup for hot reload in compose if you want to change anything
 2. These are not optimal (not for production) Dockerfiles or compose configs
 3. I know it can be further improved, but hey it was just a tiny project for me to see how to implement bloom filter using redis
+
+## Credits
+
+The dataset used in this project can be found here:
+https://www.kaggle.com/datasets/shivamb/10000-most-common-passwords?resource=download
